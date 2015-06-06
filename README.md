@@ -1,4 +1,5 @@
 This is the start of the file.
 
 Short term goals:
---set up wikibot
+
+longest matching string from the right side
