@@ -13,7 +13,7 @@ class Word:
         self.title = title;
         self.wordType = wordType;
     def __str__(self):
-        return self.title + " " + self.wordType;
+        return self.title
 
 #there's gotta be a better way to do this...
 def suffix_match(a, b):
