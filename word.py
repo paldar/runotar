@@ -1,12 +1,16 @@
 #hamming distance from wikipedia
 #url: https://en.wikipedia.org/wiki/Hamming_distance
+
+import defs
+from defs import vowels as vowels
+import defs.isWordLike as wordLike
+
 def hamming_distance(s1, s2):
     """Return the Hamming distance between equal-length sequences"""
     if len(s1) != len(s2):
         raise ValueError("Undefined for sequences of unequal length")
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
-vowels = ['a','o','i','e', 'u', 'ä', 'ö', 'y']
 
 class Word:
     def __init__(self, title, wordType):
@@ -49,3 +53,7 @@ def suffix_match_vowels(a, b):
 #input: list
 def rankBySuffix(words, target):
     return sorted(words, key = lambda word: suffix_match(word, target));
+
+def generateRandomWordlikeStrings(vowels, consonants, length, isWordLike=wordLike):
+    pass
+

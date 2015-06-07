@@ -6,12 +6,11 @@ plus I can probably remember how to conjugate these words by doing this.
 '''
 
 import os, sys
-import word.vowels as vowels
+import defs.vowels as vowels
+import defs.vowelHarmonyDict as vowelHarmonyDict
 
 
 personalEndings = ['n', 't', '', 'mme', 'tte', 'vat']
-#vowel harmony:
-personalEndingsVH = ['n', 't', '', 'mme', 'tte', 'vät']
 
 #special cases:
 negationVerb = ['en', 'et', 'ei', 'emme', 'ette', 'eivät']
@@ -49,3 +48,4 @@ def conjugate52(stem):
     return c;
 
 def conjugatePresent(stem, injection, gradation=False):
+    pass
