@@ -22,10 +22,12 @@ class Query:
         queryResult = self.getPageContent(title);
         start = queryResult.find(language);
         end = queryResult.find("----",start);
+        if (start != -1 and end == -1):
+            end = len(queryResult);
         if (start != -1 and end!= -1):
             return queryResult[start:end];
         else:
-            sys.stderr.write("Entry for " + title + " in " + language + " not found\n");
+            sys.stderr.write("Entry for " + title + " in " + language + "== not found\n");
             return "";
 
 

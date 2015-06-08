@@ -4,10 +4,10 @@ use python3
 
 import query, db, word
 
-'''
 q = query.Query();
-print(q.getPageContentForLanguage());
+print(q.getPageContentForLanguage("saada"));
 
+'''
 dataBase = db.DataBase();
 dataBase.insertOneToCollection({"name": "mike", "age": 35}, "name-test");
 '''
