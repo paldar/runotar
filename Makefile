@@ -6,4 +6,4 @@ all:
 	$(PY) main.py
 
 clean:
-	rm -rf *.pyc __pycache__
+	rm -rf *.pyc __pycache__ apicache *.ctrl

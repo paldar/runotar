@@ -7,6 +7,8 @@ import query, db, word
 q = query.Query();
 print(q.getPageContentForLanguage("saada"));
 
+#q.testFunc()
+
 '''
 dataBase = db.DataBase();
 dataBase.insertOneToCollection({"name": "mike", "age": 35}, "name-test");

@@ -13,8 +13,9 @@ class Word:
 def storeWikiEntry(entryString):
     pass;
 
+#simple parser:
 def parseWikiEntry(entryString):
-    pass
+    stack = [];
 
 #hamming distance from wikipedia
 #url: https://en.wikipedia.org/wiki/Hamming_distance
