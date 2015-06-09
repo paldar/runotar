@@ -1,7 +1,9 @@
 #contains definitions for language specific variables
 #should apply to whole language.
+import re,string
 
 vowels = ['a','o','i','e', 'u', 'ä', 'ö', 'y']
+consonants = ['b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','z','ž','š']
 
 vowelHarmonyDict = {
     'a':'ä',
@@ -12,8 +14,9 @@ vowelHarmonyDict = {
     'y':'u',
 }
 #hard coded word pattern: regex
-# (vowel)*{0,1,2}(consonant)*{0,1,2}
-wordPattern = ""
+wordPattern = "(["+"".join(vowels)+"]{1,2}|(["+"".join(consonants)+"]["+"".join(vowels)+"]))((["+"".join(vowels)+"]|["+"".join(consonants)+"]){1,2})*"
 
 def isWordLike(word):
-    pass
+    word = word.lower()
+    rex = re.search(wordPattern, word);
+    return (rex) and (rex.group(0) == word)
