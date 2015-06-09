@@ -1,5 +1,5 @@
 
-import defs
+import defs, re
 from defs import vowels as vowels
 from defs import isWordLike as wordLike
 
@@ -16,6 +16,11 @@ def storeWikiEntry(entryString):
 #simple parser:
 def parseWikiEntry(entryString):
     stack = [];
+    regexMatch = re.search("==[A-Z][a-z]+==.*----", entryString, re.MULTILINE)
+    if(regexMatch):
+        #do something about it...
+        pass
+    
 
 #hamming distance from wikipedia
 #url: https://en.wikipedia.org/wiki/Hamming_distance
