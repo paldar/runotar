@@ -15,13 +15,43 @@ def storeWikiEntry(entryString):
 
 #simple parser:
 def parseWikiEntry(entryString):
-    stack = [];
-    regexMatch = re.search("==[A-Z][a-z]+==.*----", entryString, re.MULTILINE)
-    if(regexMatch):
-        #do something about it...
-        pass
-    
+    langdict = {};
+    lastindex = 0;
+    while(lastindex < len(entryString)):
+        regexMatch = re.search("^==[A-Z][a-z]+==(\s|.)*?(----|\Z)", entryString[lastindex:], re.MULTILINE)
+        if(regexMatch):
+            #hardcoded:
+            language = (re.search("^==[A-Z][a-z]+==",regexMatch.group(0)).group(0)[2:-2]);
+            trailingChars = len(regexMatch.groups()[-1])
+            langdict[language] = parseSectionEntry(entryString[lastindex+regexMatch.start(0):lastindex+regexMatch.end(0)-trailingChars])
+            lastindex += (regexMatch.end(0) - trailingChars)
+        else:
+            break
+    return langdict
 
+#TODO:fix non-existing subsections
+def parseSectionsAndSubsections(entryString, delimiter, subsectionFunction, discardNonMatchingInfo = True):
+    secDict = {};
+    lastindex = 0;
+    while(lastindex < len(entryString)):
+        regexMatch = re.search("^"+delimiter+"[A-Z][a-z]+"+delimiter+"[^=](\s|.)*?(^"+delimiter+"[A-Z]|\Z)", entryString[lastindex:], re.MULTILINE)
+        if(regexMatch):
+            #hardcoded:
+            type = (re.search("^"+delimiter+"[A-Z][a-z]+"+delimiter,regexMatch.group(0)).group(0)[len(delimiter):-1*len(delimiter)]);
+            trailingChars = len(regexMatch.groups()[-1])
+            secDict[type] = subsectionFunction(entryString[lastindex+regexMatch.start(0):lastindex+regexMatch.end(0)-trailingChars])
+            lastindex += (regexMatch.end(0) - trailingChars)
+        else:
+            break
+    return secDict 
+
+def parseSectionEntry(entryString):
+    return parseSectionsAndSubsections(entryString, "===", parseSubSectionEntry)
+
+
+def parseSubSectionEntry(entryString):
+    return parseSectionsAndSubsections(entryString, "====", lambda x:x)
+            
 #hamming distance from wikipedia
 #url: https://en.wikipedia.org/wiki/Hamming_distance
 def hamming_distance(s1, s2):
