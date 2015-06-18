@@ -24,7 +24,8 @@ wordTypes = [
     'Postposition',
     'Preposition',
     'Numeral',
-    'Suffix'
+    'Suffix',
+    'Abbreviation'
 ]
 #hard coded word pattern: regex
 wordPattern = "(["+"".join(vowels)+"]{1,2}|(["+"".join(consonants)+"]["+"".join(vowels)+"]))((["+"".join(vowels)+"]|["+"".join(consonants)+"]){1,2})*"
