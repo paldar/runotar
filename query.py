@@ -29,13 +29,17 @@ class Query:
         return self.parseContentOfLanguage(title, self.getPageContent(title), language)
 
     def parseContentOfLanguage(self, title, content, language):
-        # use word's parser:
-        self.entryDict = word.parseWikiEntry(content)
-        if language.capitalize() in self.entryDict.keys():
-            return self.entryDict[language.capitalize()]
+        if language.capitalize() in content:
+            # use word's parser:
+            self.entryDict = word.parseWikiEntry(content)
+            if language.capitalize() in self.entryDict.keys():
+                return self.entryDict[language.capitalize()]
+            else:
+                sys.stderr.write("Entry for " + title + " in " + language + " not found\n");
+                return "";
         else:
             sys.stderr.write("Entry for " + title + " in " + language + " not found\n");
-            return "";
+            return ""
 
     #returns a word object
     def getWordEntryForLanguage(self, title="olla", language="Finnish"):
