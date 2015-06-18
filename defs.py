@@ -13,6 +13,19 @@ vowelHarmonyDict = {
     'ö':'o',
     'y':'u',
 }
+
+wordTypes = [
+    'Verb',
+    'Noun',
+    'Adverb',
+    'Adjective',
+    'Interjection',
+    'Pronoun',
+    'Postposition',
+    'Preposition',
+    'Numeral',
+    'Suffix'
+]
 #hard coded word pattern: regex
 wordPattern = "(["+"".join(vowels)+"]{1,2}|(["+"".join(consonants)+"]["+"".join(vowels)+"]))((["+"".join(vowels)+"]|["+"".join(consonants)+"]){1,2})*"
 

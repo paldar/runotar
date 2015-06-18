@@ -5,7 +5,7 @@ class DataBase:
     def __init__(self):
         #definitions:
         self.dbName = 'wikirasia';
-        self.port = 65533;
+        self.port = 27017;
         self.host = 'localhost';
         #set up:
         self.db = self.getDataBase();
@@ -23,3 +23,8 @@ class DataBase:
         if collection == None:
             collection = self.getCollection(collectionName);
         return collection.insert_one(document);
+
+    def upsertOneToCollection(self, document, query, collectionName, collection=None):
+        if collection == None:
+            collection = self.getCollection(collectionName);
+        return collection.find_and_modify(query, update=document, upsert=True)

@@ -1,17 +1,27 @@
 
 import defs, re
-from defs import vowels as vowels
-from defs import isWordLike as wordLike
+from defs import *
 
 class Word:
-    def __init__(self, title, wordType):
+    def __init__(self, title, language, parsedDictionary={}):
         self.title = title;
-        self.wordType = wordType;
-    def __str__(self):
-        return self.title
+        self.language = language;
+        self.content = parsedDictionary;
+        self.content["title"] = title;
+        self.content["language"] = language;
+        self.hashValueDict = {"hashValue" :title+language};
+        self.content["hashValue"] = title+language;
+        self.wordTypes = [val for val in defs.wordTypes if val in parsedDictionary.keys()];
+        self.content["type"] = self.wordTypes;
 
-def storeWikiEntry(entryString):
-    pass;
+    def __str__(self):
+        return self.title;
+
+    def toObject(self):
+        return self.content
+
+def deserializeJSONWordObject(parsedDictionary):
+    return Word(parsedDictionary["title"],parsedDictionary["language"],parsedDictionary)
 
 #simple parser:
 def parseWikiEntry(entryString):
@@ -29,7 +39,6 @@ def parseWikiEntry(entryString):
             break
     return langdict
 
-#TODO:fix non-existing subsections
 def parseSectionsAndSubsections(entryString, delimiter, subsectionFunction, discardNonMatchingInfo = True):
     secDict = {};
     lastindex = 0;
@@ -40,10 +49,14 @@ def parseSectionsAndSubsections(entryString, delimiter, subsectionFunction, disc
             type = (re.search("^"+delimiter+"[A-Z][a-z]+"+delimiter,regexMatch.group(0)).group(0)[len(delimiter):-1*len(delimiter)]);
             trailingChars = len(regexMatch.groups()[-1])
             secDict[type] = subsectionFunction(entryString[lastindex+regexMatch.start(0):lastindex+regexMatch.end(0)-trailingChars])
+            if lastindex==0 and regexMatch.start(0)>0:
+                secDict["content"]=entryString[0:regexMatch.start(0)]
             lastindex += (regexMatch.end(0) - trailingChars)
         else:
+            if lastindex==0:
+                secDict["content"]=entryString;
             break
-    return secDict 
+    return secDict
 
 def parseSectionEntry(entryString):
     return parseSectionsAndSubsections(entryString, "===", parseSubSectionEntry)
@@ -51,7 +64,7 @@ def parseSectionEntry(entryString):
 
 def parseSubSectionEntry(entryString):
     return parseSectionsAndSubsections(entryString, "====", lambda x:x)
-            
+
 #hamming distance from wikipedia
 #url: https://en.wikipedia.org/wiki/Hamming_distance
 def hamming_distance(s1, s2):
@@ -94,7 +107,3 @@ def suffix_match_vowels(a, b):
 #input: list
 def rankBySuffix(words, target):
     return sorted(words, key = lambda word: suffix_match(word, target));
-
-def generateRandomWordlikeStrings(vowels, consonants, length, isWordLike=wordLike):
-    pass
-
