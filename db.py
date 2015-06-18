@@ -4,7 +4,7 @@ from pymongo import MongoClient
 class DataBase:
     def __init__(self):
         #definitions:
-        self.dbName = 'wikirasia';
+        self.dbName = 'runotar';
         self.port = 27017;
         self.host = 'localhost';
         #set up:
