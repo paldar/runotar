@@ -28,3 +28,12 @@ class DataBase:
         if collection == None:
             collection = self.getCollection(collectionName);
         return collection.find_and_modify(query, update=document, upsert=True)
+    
+    def getAllVisitedTitles(self, collectionName, collection=None):
+        if collection == None:
+            collection = self.getCollection(collectionName);
+        #TODO: consider using mongo's aggregation calls
+        return map(lambda x: x["title"], collection.find({}, {"title": 1, "_id": 0}))
+
+    def upsertManyIntoCollection(self, documents, collectionName, collection=None):
+        pass

@@ -1,7 +1,7 @@
 #crawler:
 
 import query, db, word, utils, multiprocessing, pywikibot as pw
-from multiprocessing import Pool
+from concurrent.futures import ThreadPoolExecutor as Executor
 from collections import deque
 
 def crawlSpace(initWord="olla", language="Finnish", collectionName="finnish"):
@@ -38,4 +38,8 @@ def crawlSpace(initWord="olla", language="Finnish", collectionName="finnish"):
                         dataBase.upsertOneToCollection(wordObj.toObject(), wordObj.hashValueDict, collectionName)
                         queue.extend(q.linksIterator)
 
-crawlSpace()
+
+def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
+    visitedSet = set()
+    q = query.Query()
+    dataBase = db.DataBase()
