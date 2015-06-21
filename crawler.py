@@ -68,4 +68,7 @@ def queryAndReturnNeighbors(page, collection, visitedSet, language):
 def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
     dataBase = db.DataBase()
     visitedSet = set(dataBase.getAllVisitedTitles(collectionName))
+    if initWord in visitedSet:
+        #find the last item updated:
+        dataBase.getCollection(collectionName).aggregate({"$group": {"_id": '', "last": {"$max":"$_id"}}})
 
