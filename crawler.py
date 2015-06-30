@@ -70,5 +70,5 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
     visitedSet = set(dataBase.getAllVisitedTitles(collectionName))
     if initWord in visitedSet:
         #find the last item updated:
-        dataBase.getCollection(collectionName).aggregate({"$group": {"_id": '', "last": {"$max":"$_id"}}})
+        lastTitle = dataBase.getCollection(collectionName).find().sort("_id",-1).limit(1)[0].title
 

@@ -1,5 +1,5 @@
 
-import defs, re
+import defs, re, time
 from defs import *
 
 class Word:
@@ -18,6 +18,7 @@ class Word:
         return self.title;
 
     def toObject(self):
+        self.content["modifiedTime"] = time.time()
         return self.content
 
 def deserializeJSONWordObject(parsedDictionary):
