@@ -20,6 +20,7 @@ var WordSchema = new Schema({
 });
 
 WordSchema.methods = {
+
 };
 
 mongoose.model('Word', WordSchema);
