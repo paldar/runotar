@@ -52,11 +52,11 @@ def queryAndReturnNeighbors(page, dataBase, collectionName, visitedSet, language
         return set()
     else:
         print(title)
-        if ("Category" in title and language in title):
+        if ((("Category" in title) or ("Index" in title)) and language in title):
             #add links:
-            print("added category")
+            print("added category/index")
             return set(page.linkedPages())
-        elif ("Appendix" in title):
+        elif ("Appendix" in title) or ("File" in title):
             return set()
         else:
             wordString = q.parseContentOfLanguage(title, q.getContentOfPage(page), language)
@@ -72,21 +72,27 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
     dataBase = db.DataBase()
     visitedSet = set(dataBase.getAllVisitedTitles(collectionName))
     if initWord in visitedSet:
-        #find the last item updated:
-        initWord = dataBase.getCollection(collectionName).find().sort("_id",-1).limit(1)[0]["title"]
+        #find the last 5 item updated:
+        initWords = list(map(lambda x:x["title"], dataBase.getCollection(collectionName).find().sort("_id",-1).limit(5)))
+    else:
+        initWords = [initword]
+    #exclude initWords from visitedSet:
+    visitedSet = {item for item in visitedSet if item not in initWords}
     #build page:
-    page = pw.Page(pw.getSite(), initWord)
+    pages = map(lambda x:pw.Page(pw.getSite(), x), initWords)
     #add page to workset:
-    workset = set([page])
+    workset = set(pages)
     #init worker:
     with Executor(max_workers=32) as executor:
         while(len(workset)):
-            print(workset)
+            #copied visitedSet:
+            print(visitedSet)
+            visitedSetCopy = deepcopy(visitedSet)
             #crazy functional stuff:
-            futures = map(lambda x:executor.submit(queryAndReturnNeighbors, x, dataBase, collectionName, deepcopy(visitedSet),
+            futures = map(lambda x:executor.submit(queryAndReturnNeighbors, x, dataBase, collectionName, visitedSetCopy,
                 language), workset)
             #add word to visitedSet:
-            visitedSet = visitedSet.union(workset)
+            visitedSet = visitedSet.union(set(map(lambda x: x._link.canonical_title(), workset)))
             workset = {page for page in reduce(lambda a,b:a|b, map(lambda future: future.result(),
                 concurrent.futures.as_completed(futures))) if page._link.canonical_title() not in visitedSet}
             print(workset)

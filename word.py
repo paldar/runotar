@@ -9,8 +9,6 @@ def sanitizeParsedDictionary(dictionary):
         #find '#' delimiters:
         if '#' in val:
             splittedItems = re.split("(\n)+#(?![*:{1,3}])", val)
-            for item in list(splittedItems):
-                print(item)
             return [definition for definition in map(lambda x:cleanField(x.replace("#","")), splittedItems) if
                     len(definition)]
         val = val.replace("\n", "")
@@ -37,10 +35,12 @@ class Word:
     def __init__(self, title, language, parsedDictionary={}):
         self.title = title;
         self.language = language;
-        print(parsedDictionary)
         parsedDictionary = sanitizeParsedDictionary(parsedDictionary)
-        print(parsedDictionary)
         self.content = parsedDictionary;
+        #safety check:
+        if isinstance(self.content, list):
+            self.content = {}
+            self.content["content"] = parsedDictionary
         self.content["title"] = title;
         self.content["language"] = language;
         self.hashValueDict = {"hashValue" :title+language};
