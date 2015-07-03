@@ -1,4 +1,7 @@
-
+'''
+Hopefully this code will just work so it will never have to be touched ever again.
+It must've given me nightmares at least five times.
+'''
 import defs, re, time
 from defs import *
 
@@ -14,7 +17,7 @@ def sanitizeParsedDictionary(dictionary):
         val = val.replace("\n", "")
         val = val.replace("[", "")
         val = val.replace("]", "")
-        return re.sub("'{1,5}", "", re.sub("={2,4}[A-Z][a-z]*={2,4}", "", val));
+        return re.sub("'{1,5}", "", re.sub("={2,4}[A-Z][a-zA-z0-9 ]*={2,4}", "", val));
 
     if len(dictionary) == 1:
         return cleanField(dictionary[list(dictionary.keys())[0]])
@@ -37,16 +40,14 @@ class Word:
         self.language = language;
         parsedDictionary = sanitizeParsedDictionary(parsedDictionary)
         self.content = parsedDictionary;
-        #safety check:
-        if isinstance(self.content, list):
-            self.content = {}
-            self.content["content"] = parsedDictionary
         self.content["title"] = title;
         self.content["language"] = language;
         self.hashValueDict = {"hashValue" :title+language};
         self.content["hashValue"] = title+language;
         self.wordTypes = [val for val in defs.wordTypes if val in parsedDictionary.keys()];
         self.content["type"] = self.wordTypes;
+        if self.title[0:1] == "-":
+            self.content["type"].append("Suffix")
 
     def __str__(self):
         return self.title;
@@ -78,10 +79,10 @@ def parseSectionsAndSubsections(entryString, delimiter, subsectionFunction, disc
     secDict = {};
     lastindex = 0;
     while(lastindex < len(entryString)):
-        regexMatch = re.search("^"+delimiter+"[A-Z][a-z]+"+delimiter+"[^=](\s|.)*?(^"+delimiter+"[A-Z]|\Z)", entryString[lastindex:], re.MULTILINE)
+        regexMatch = re.search("(^|\n)"+delimiter+"[A-Z][A-Za-z0-9 ]+"+delimiter+"[^=](\s|.)*?(^"+delimiter+"[A-Z]|\Z)", entryString[lastindex:], re.MULTILINE)
         if(regexMatch):
             #hardcoded:
-            type = (re.search("^"+delimiter+"[A-Z][a-z]+"+delimiter,regexMatch.group(0)).group(0)[len(delimiter):-1*len(delimiter)]);
+            type = (re.search("(^|\n)"+delimiter+"[A-Z][A-Za-z0-9 ]+"+delimiter,regexMatch.group(0)).group(0)[len(delimiter):-1*len(delimiter)]).replace("=","")
             trailingChars = len(regexMatch.groups()[-1])
             secDict[type] = subsectionFunction(entryString[lastindex+regexMatch.start(0):lastindex+regexMatch.end(0)-trailingChars])
             if lastindex==0 and regexMatch.start(0)>0:
