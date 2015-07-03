@@ -75,7 +75,7 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
         #find the last 5 item updated:
         initWords = list(map(lambda x:x["title"], dataBase.getCollection(collectionName).find().sort("_id",-1).limit(5)))
     else:
-        initWords = [initword]
+        initWords = [initWord]
     #exclude initWords from visitedSet:
     visitedSet = {item for item in visitedSet if item not in initWords}
     #build page:
@@ -86,7 +86,6 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
     with Executor(max_workers=32) as executor:
         while(len(workset)):
             #copied visitedSet:
-            print(visitedSet)
             visitedSetCopy = deepcopy(visitedSet)
             #crazy functional stuff:
             futures = map(lambda x:executor.submit(queryAndReturnNeighbors, x, dataBase, collectionName, visitedSetCopy,
@@ -95,8 +94,6 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
             visitedSet = visitedSet.union(set(map(lambda x: x._link.canonical_title(), workset)))
             workset = {page for page in reduce(lambda a,b:a|b, map(lambda future: future.result(),
                 concurrent.futures.as_completed(futures))) if page._link.canonical_title() not in visitedSet}
-            print(workset)
-
 
 crawlSpace2()
 
