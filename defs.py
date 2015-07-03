@@ -40,6 +40,7 @@ wordTypes = [
     'Pronoun',
     'Postposition',
     'Preposition',
+    'Conjunction',
     'Numeral',
     'Suffix',
     'Abbreviation'
