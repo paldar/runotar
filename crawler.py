@@ -1,8 +1,10 @@
 #crawler:
 
-import query, db, word, utils, multiprocessing, pywikibot as pw
+import query, db, word, utils, concurrent, multiprocessing, pywikibot as pw
 from concurrent.futures import ThreadPoolExecutor as Executor
 from collections import deque
+from functools import reduce
+from copy import deepcopy
 
 def crawlSpace(initWord="olla", language="Finnish", collectionName="finnish"):
     queryWord = initWord
@@ -39,7 +41,8 @@ def crawlSpace(initWord="olla", language="Finnish", collectionName="finnish"):
                         queue.extend(q.linksIterator)
 
 
-def queryAndReturnNeighbors(page, collection, visitedSet, language):
+#returns a set of pages
+def queryAndReturnNeighbors(page, dataBase, collectionName, visitedSet, language):
     if not isinstance(page, pw.Page):
         return set()
     #return empty set:
@@ -70,5 +73,27 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
     visitedSet = set(dataBase.getAllVisitedTitles(collectionName))
     if initWord in visitedSet:
         #find the last item updated:
-        lastTitle = dataBase.getCollection(collectionName).find().sort("_id",-1).limit(1)[0].title
+        initWord = dataBase.getCollection(collectionName).find().sort("_id",-1).limit(1)[0]["title"]
+    #build page:
+    page = pw.Page(pw.getSite(), initWord)
+    #add page to workset:
+    workset = set([page])
+    #init worker:
+    with Executor(max_workers=32) as executor:
+        while(len(workset)):
+            print(workset)
+            #crazy functional stuff:
+            futures = map(lambda x:executor.submit(queryAndReturnNeighbors, x, dataBase, collectionName, deepcopy(visitedSet),
+                language), workset)
+            #add word to visitedSet:
+            visitedSet = visitedSet.union(workset)
+            workset = {page for page in reduce(lambda a,b:a|b, map(lambda future: future.result(),
+                concurrent.futures.as_completed(futures))) if page._link.canonical_title() not in visitedSet}
+            print(workset)
+
+
+crawlSpace2()
+
+
+
 

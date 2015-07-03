@@ -1,11 +1,14 @@
 'use strict';
 
-var mw = require('nodemw'),
-    client = new mw({
-        server: 'en.wiktionary.org',
-        path: '/w',
-        debug: false
-    });
-client.getArticle('olla', function(error, data) {
-    console.log(data);
-});
+var _ = require('lodash');
+
+var http = require('http');
+var options = {
+    host: 'en.wiktionary.org',
+    path: '/wiki/olla'
+};
+
+//var request = _.cloneDeep(options).path+="olla";
+http.request(options, function(res) {
+    console.log(res);
+}).end();
