@@ -8,6 +8,7 @@ plus I can probably remember how to conjugate these words by doing this.
 import os, sys
 import defs.vowels as vowels
 import defs.vowelHarmonyDict as vowelHarmonyDict
+import defs.gradationDict as gradationDict
 
 
 personalEndings = ['n', 't', '', 'mme', 'tte', 'vat']
@@ -16,23 +17,6 @@ personalEndings = ['n', 't', '', 'mme', 'tte', 'vat']
 negationVerb = ['en', 'et', 'ei', 'emme', 'ette', 'eivät']
 
 #list with ref from http://www.uusikielemme.fi/consonantgradation.html
-gradationDict = {
-    "nt":"nn", #nt->nn
-    "k":"", #k->""
-    "k":"v", #k->v
-    "t":"d",
-    "p":"v",
-    "kk":"k",
-    "pp":"p",
-    "tt":"t",
-    "nk":"ng",
-    "lt":"ll",
-    "rt":"rr",
-    "mp":"mm",
-    "lki":"lje",
-    "rki":"rje"
-}
-
 gradationTypeOne = {
     "nt":"nn",
     "k":"", #k->""
