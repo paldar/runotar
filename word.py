@@ -2,10 +2,44 @@
 import defs, re, time
 from defs import *
 
+def sanitizeParsedDictionary(dictionary):
+    def cleanField(val):
+        #must be string value at this point:
+
+        #find '#' delimiters:
+        if '#' in val:
+            splittedItems = re.split("(\n)+#(?![*:{1,3}])", val)
+            for item in list(splittedItems):
+                print(item)
+            return [definition for definition in map(lambda x:cleanField(x.replace("#","")), splittedItems) if
+                    len(definition)]
+        val = val.replace("\n", "")
+        val = val.replace("[", "")
+        val = val.replace("]", "")
+        return re.sub("'{1,5}", "", re.sub("={2,4}[A-Z][a-z]*={2,4}", "", val));
+
+    if len(dictionary) == 1:
+        return cleanField(dictionary[list(dictionary.keys())[0]])
+    newDictionary = {}
+    for key in dictionary:
+        val = dictionary[key]
+        newVal = ""
+        #not great, but..
+        if isinstance(val, dict):
+            newVal = sanitizeParsedDictionary(val)
+        elif isinstance(val, str):
+            newVal = cleanField(val)
+        if len(newVal) > 0:
+            newDictionary[key] = newVal
+    return newDictionary
+
 class Word:
     def __init__(self, title, language, parsedDictionary={}):
         self.title = title;
         self.language = language;
+        print(parsedDictionary)
+        parsedDictionary = sanitizeParsedDictionary(parsedDictionary)
+        print(parsedDictionary)
         self.content = parsedDictionary;
         self.content["title"] = title;
         self.content["language"] = language;
