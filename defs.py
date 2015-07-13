@@ -14,6 +14,23 @@ vowelHarmonyDict = {
     'y':'u',
 }
 
+gradationDict = {
+    "nt":"nn", #nt->nn
+    "k":"", #k->""
+    "k":"v", #k->v
+    "t":"d",
+    "p":"v",
+    "kk":"k",
+    "pp":"p",
+    "tt":"t",
+    "nk":"ng",
+    "lt":"ll",
+    "rt":"rr",
+    "mp":"mm",
+    "lki":"lje",
+    "rki":"rje"
+}
+
 wordTypes = [
     'Verb',
     'Noun',
@@ -23,6 +40,7 @@ wordTypes = [
     'Pronoun',
     'Postposition',
     'Preposition',
+    'Conjunction',
     'Numeral',
     'Suffix',
     'Abbreviation'
