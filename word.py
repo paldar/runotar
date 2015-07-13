@@ -39,6 +39,8 @@ class Word:
         self.title = title;
         self.language = language;
         parsedDictionary = sanitizeParsedDictionary(parsedDictionary)
+        if not isinstance(parsedDictionary, dict):
+            print("word: ", title)
         self.content = parsedDictionary;
         self.content["title"] = title;
         self.content["language"] = language;

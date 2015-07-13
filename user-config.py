@@ -257,6 +257,8 @@ line_separator = LS = u'\n'
 # Settings to enable mwparserfromhell <http://mwparserfromhell.readthedocs.org/en/latest/>
 # Currently used in textlib.extract_templates_and_params
 # This should be more accurate than our current regex, but is currently opt-in.
-use_mwparserfromhell = False
+use_mwparserfromhell = True
+
+max_queue_size = 1024
 
 # End of configuration section

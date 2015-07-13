@@ -1,6 +1,7 @@
 #crawler:
 
-import query, db, word, utils, concurrent, multiprocessing, pywikibot as pw
+import query, db, word, utils, concurrent, multiprocessing, pywikibot as pw, time
+import cProfile ,pstats, io as StringIO
 from concurrent.futures import ThreadPoolExecutor as Executor
 from collections import deque
 from functools import reduce
@@ -21,12 +22,10 @@ def crawlSpace(initWord="olla", language="Finnish", collectionName="finnish"):
             #this is bad...but hey....
             if isinstance(link, pw.Page):
                 title = link._link.canonical_title()
-                print(title)
                 if ("Category" in title):
                     if ("Finnish" in title):
                         #add links:
                         queue.extend(link.linkedPages());
-                        print("added category")
                     continue
                 elif ("Appendix" in title):
                     continue
@@ -41,6 +40,19 @@ def crawlSpace(initWord="olla", language="Finnish", collectionName="finnish"):
                         queue.extend(q.linksIterator)
 
 
+def queryAndReturnNeighborsProfile(page, dataBase, collectionName, visitedSet, language):
+    pr = cProfile.Profile()
+    pr.enable()
+    rvalue = queryAndReturnNeighbors(page, dataBase, collectionName, visitedSet, language)
+    print(rvalue)
+    pr.disable()
+    s = StringIO.StringIO()
+    sortby = 'cumulative'
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print(s.getvalue())
+    return rvalue
+
 #returns a set of pages
 def queryAndReturnNeighbors(page, dataBase, collectionName, visitedSet, language):
     if not isinstance(page, pw.Page):
@@ -51,10 +63,10 @@ def queryAndReturnNeighbors(page, dataBase, collectionName, visitedSet, language
     if title in visitedSet:
         return set()
     else:
-        print(title)
+        #print(title)
         if ((("Category" in title) or ("Index" in title)) and language in title):
             #add links:
-            print("added category/index")
+            #print("added category/index")
             return set(page.linkedPages())
         elif ("Appendix" in title) or ("File" in title):
             return set()
@@ -83,8 +95,10 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
     #add page to workset:
     workset = set(pages)
     #init worker:
-    with Executor(max_workers=32) as executor:
+    with Executor(max_workers=64) as executor:
         while(len(workset)):
+            workSetSize = len(workset)
+            initTime = time.time()
             #copied visitedSet:
             visitedSetCopy = deepcopy(visitedSet)
             #crazy functional stuff:
@@ -94,6 +108,7 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
             visitedSet = visitedSet.union(set(map(lambda x: x._link.canonical_title(), workset)))
             workset = {page for page in reduce(lambda a,b:a|b, map(lambda future: future.result(),
                 concurrent.futures.as_completed(futures))) if page._link.canonical_title() not in visitedSet}
+            print("processed", workSetSize,"links in", time.time()-initTime, "seconds")
 
 crawlSpace2()
 
