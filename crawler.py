@@ -2,6 +2,7 @@
 
 import query, db, word, utils, concurrent, multiprocessing, pywikibot as pw, time
 import cProfile ,pstats, io as StringIO
+import threading
 from concurrent.futures import ThreadPoolExecutor as Executor
 from collections import deque
 from functools import reduce
@@ -53,8 +54,20 @@ def queryAndReturnNeighborsProfile(page, dataBase, collectionName, visitedSet, l
     print(s.getvalue())
     return rvalue
 
+class DBPool:
+    def __init__(count):
+        self.pool = list(map(lambda x:db.DataBase(), range(count)))
+        self.count = count
+        self.location = 0
+    def getDB():
+        db = self.pool[self.location % count]
+        self.location += 1
+        return db
+
+
 #returns a set of pages
-def queryAndReturnNeighbors(page, dataBase, collectionName, visitedSet, language):
+def queryAndReturnNeighbors(page, dbPool, collectionName, visitedSet, language):
+    dataBase = dbPool.getDB()
     if not isinstance(page, pw.Page):
         return set()
     #return empty set:
@@ -84,8 +97,9 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
     dataBase = db.DataBase()
     visitedSet = set(dataBase.getAllVisitedTitles(collectionName))
     if initWord in visitedSet:
-        #find the last 5 item updated:
-        initWords = list(map(lambda x:x["title"], dataBase.getCollection(collectionName).find().sort("_id",-1).limit(5)))
+        #find the last 64 item updated:
+        initWords = list(map(lambda x:x["title"],
+            dataBase.getCollection(collectionName).find().sort("_id",-1).limit(64)))
     else:
         initWords = [initWord]
     #exclude initWords from visitedSet:
@@ -95,6 +109,7 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
     #add page to workset:
     workset = set(pages)
     #init worker:
+    dbConnPool = DBPool(64)
     with Executor(max_workers=64) as executor:
         while(len(workset)):
             workSetSize = len(workset)
@@ -102,13 +117,15 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
             #copied visitedSet:
             visitedSetCopy = deepcopy(visitedSet)
             #crazy functional stuff:
-            futures = map(lambda x:executor.submit(queryAndReturnNeighbors, x, dataBase, collectionName, visitedSetCopy,
+            futures = map(lambda x:executor.submit(queryAndReturnNeighbors, x,
+                dbConnPool, collectionName, visitedSetCopy,
                 language), workset)
             #add word to visitedSet:
             visitedSet = visitedSet.union(set(map(lambda x: x._link.canonical_title(), workset)))
             workset = {page for page in reduce(lambda a,b:a|b, map(lambda future: future.result(),
                 concurrent.futures.as_completed(futures))) if page._link.canonical_title() not in visitedSet}
-            print("processed", workSetSize,"links in", time.time()-initTime, "seconds")
+            print("processed", workSetSize,"links in", time.time()-initTime,
+                    "seconds, next iteration:",len(workset))
 
 crawlSpace2()
 
