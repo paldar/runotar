@@ -127,7 +127,7 @@ def crawlSpace2(initWord="olla", language="Finnish", collectionName="finnish"):
             print("processed", workSetSize,"links in", time.time()-initTime,
                     "seconds, next iteration:",len(workset))
 
-crawlSpace2()
+crawlSpace()
 
 
 
