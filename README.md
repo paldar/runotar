@@ -1,3 +1,14 @@
+# runotar
+
+This is a crawler based on pywikibot, crawls through wiktionary entries and 
+stores entries of a particular language into a MongoDB database.
+
+modify and run
+``
+$ python3 crawler.py
+``
+for the desired effects.
+
 The first milestone is considered to be done.
 Currently the code does the following:
 - given a starting entry on wiktionary, BFS through the entire connected space in a thread pool.
